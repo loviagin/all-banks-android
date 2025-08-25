@@ -1,4 +1,4 @@
-package com.lovigin.android.allbanks.models
+package com.lovigin.android.allbanks.models.dto
 
 data class FrankfurterResponse(
     val rates: Map<String, Double>,
