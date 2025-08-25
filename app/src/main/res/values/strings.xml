@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">All Banks</string>
+    <string name="curr_usd">US Dollar</string>
+    <string name="curr_eur">Euro</string>
+    <string name="curr_gbp">British Pound</string>
+    <string name="curr_rub">Russian Ruble</string>
+    <string name="curr_byn">Belarusian Ruble</string>
+    <string name="curr_kzt">Tenge</string>
+    <string name="curr_cny">Chinese Yuan</string>
+    <string name="curr_jpy">Japanese Yen</string>
+    <string name="curr_chf">Swiss Franc</string>
+    <string name="curr_sek">Swedish Krona</string>
+    <string name="curr_krw">South Korean Won</string>
+    <string name="curr_nok">Norwegian Krone</string>
+    <string name="curr_mxn">Mexican Peso</string>
+    <string name="curr_try">Turkish Lira</string>
+</resources>
