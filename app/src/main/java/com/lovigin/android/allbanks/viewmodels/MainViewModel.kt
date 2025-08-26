@@ -3,6 +3,7 @@ package com.lovigin.android.allbanks.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lovigin.android.allbanks.data.repo.RatesRepository
+import com.lovigin.android.allbanks.data.repo.UserRepository
 import com.lovigin.android.allbanks.models.Account
 import com.lovigin.android.allbanks.enums.SelectedTab
 import com.lovigin.android.allbanks.models.User
@@ -14,14 +15,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repo: RatesRepository
+    private val repo: RatesRepository,
+    private val userRepo: UserRepository
 ) : ViewModel() {
 
-    private val _selectedTab = MutableStateFlow(SelectedTab.HOME)
+    private val _selectedTab = MutableStateFlow<SelectedTab>(SelectedTab.HOME)
     val selectedTab: StateFlow<SelectedTab> = _selectedTab
 
     private val _currentUser = MutableStateFlow<User?>(null)
@@ -34,24 +37,25 @@ class MainViewModel @Inject constructor(
     val isLoading: StateFlow<Boolean> = _isLoading
 
     init {
+        // Подтянем/создадим пользователя сразу
+        ensureUser()
+        // И сразу подтянем курсы
         update()
-        // аналог getAllowanceFromApi()
+        // Аналог getAllowanceFromApi()
         viewModelScope.launch(Dispatchers.IO) {
             runCatching { repo.loadDonationAllowedFromApi() }
         }
     }
 
     fun update() {
-        fetchExchangeRates { rates ->
-            _exchangeRates.value = rates
-        }
-        // дублируем вызов как в Swift (необязательно, но 1:1)
+        fetchExchangeRates()
+        // как в Swift — можно вызывать и тут
         viewModelScope.launch(Dispatchers.IO) {
             runCatching { repo.loadDonationAllowedFromApi() }
         }
     }
 
-    private fun fetchExchangeRates(completion: (Map<String, Double>) -> Unit) {
+    private fun fetchExchangeRates() {
         if (_isLoading.value) return
         _isLoading.value = true
 
@@ -61,7 +65,6 @@ class MainViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 _exchangeRates.value = rates
                 _isLoading.value = false
-                completion(rates)
             }
         }
     }
@@ -96,15 +99,28 @@ class MainViewModel @Inject constructor(
             .mapNotNull { acc ->
                 val key = acc.currency.uppercase(Locale.ROOT)
                 val rate = rates[key] ?: return@mapNotNull null
-                val converted = when {
+                when {
                     key == targetKey -> acc.balance
                     key == "USD" -> acc.balance * targetRate
                     targetKey == "USD" -> acc.balance / rate
                     else -> (acc.balance / rate) * targetRate
                 }
-                converted
             }
             .sum()
+    }
+
+    fun ensureUser() {
+        viewModelScope.launch(Dispatchers.IO) {
+            // Если пользователя ещё нет, создаём дефолтного в памяти
+            val u = _currentUser.value ?: User(
+                id = UUID.randomUUID(),
+                name = "",
+                email = "",
+                defaultCurrency = "USD",
+                favoritesCurrencies = emptyList()
+            )
+            withContext(Dispatchers.Main) { _currentUser.value = u }
+        }
     }
 
     fun setSelectedTab(tab: SelectedTab) { _selectedTab.value = tab }

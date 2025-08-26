@@ -6,7 +6,10 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
-    kotlin("kapt")
+    id("kotlin-kapt")
+}
+hilt {
+    enableAggregatingTask = false
 }
 
 kotlin {
@@ -64,17 +67,20 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.okhttp)
+    implementation(libs.androidx.datastore.preferences)
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
     // Room
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.foundation)
     ksp(libs.androidx.room.compiler)
 
     // Hilt
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
     // KotlinX
@@ -90,4 +96,13 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+configurations.configureEach {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "com.palantir.javapoet" && requested.name == "javapoet") {
+            useVersion("0.5.0")
+            because("Hilt Gradle Plugin нуждается в ClassName.canonicalName()")
+        }
+    }
 }

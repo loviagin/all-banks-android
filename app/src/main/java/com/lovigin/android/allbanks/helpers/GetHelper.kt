@@ -3,7 +3,6 @@ package com.lovigin.android.allbanks.helpers
 import android.content.Context
 import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.lovigin.android.allbanks.R
 import com.lovigin.android.allbanks.enums.Currency
 import com.lovigin.android.allbanks.ui.icons.bankIconForCurrencyCode
 import java.util.UUID
@@ -57,13 +56,8 @@ object GetHelper {
             val pkg = context.packageName
             val info = pm.getPackageInfo(pkg, 0)
             val versionName = info.versionName ?: "Unknown"
-            // longVersionCode доступен с P; для обратной совместимости:
-            val buildNumber = if (android.os.Build.VERSION.SDK_INT >= 28) {
+            val buildNumber =
                 info.longVersionCode.toString()
-            } else {
-                @Suppress("DEPRECATION")
-                info.versionCode.toString()
-            }
             "Version $versionName ($buildNumber)"
         } catch (e: Exception) {
             Log.e(TAG, "Version read failed", e)
