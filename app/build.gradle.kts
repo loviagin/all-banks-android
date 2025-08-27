@@ -67,8 +67,9 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.okhttp)
-    implementation(libs.androidx.datastore.preferences)
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation(libs.okio)
+//    implementation(libs.androidx.datastore.preferences)
+//    implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
