@@ -8,9 +8,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.lovigin.android.allbanks.R
 import com.lovigin.android.allbanks.data.local.AppDatabase
 import com.lovigin.android.allbanks.data.local.entity.BankEntity
 import com.lovigin.android.allbanks.data.local.entity.LoanEntity
@@ -66,7 +68,7 @@ fun LoanSheet(
             .padding(20.dp)
     ) {
         Text(
-            if (isEditing) name.ifBlank { "Loan" } else "New Loan",
+            if (isEditing) name.ifBlank { stringResource(R.string.loan_str) } else stringResource(R.string.new_loan_str),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -76,7 +78,7 @@ fun LoanSheet(
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Enter loan name (optional)") },
+            label = { Text(stringResource(R.string.enter_loan_name_optional_str)) },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(12.dp))
@@ -87,7 +89,7 @@ fun LoanSheet(
             onClick = { bankMenu = true },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(bank?.name ?: "Choose bank")
+            Text(bank?.name ?: stringResource(R.string.choose_bank_str))
         }
         DropdownMenu(expanded = bankMenu, onDismissRequest = { bankMenu = false }) {
             banks.forEach { b ->
@@ -121,7 +123,7 @@ fun LoanSheet(
         OutlinedTextField(
             value = if (amount == 0.0) "" else amount.toString(),
             onValueChange = { v -> amount = v.toDoubleOrNull() ?: 0.0 },
-            label = { Text("Total amount") },
+            label = { Text(stringResource(R.string.total_amount_str)) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
@@ -131,7 +133,7 @@ fun LoanSheet(
         OutlinedTextField(
             value = if (payment == 0.0) "" else payment.toString(),
             onValueChange = { v -> payment = v.toDoubleOrNull() ?: 0.0 },
-            label = { Text("Monthly payment") },
+            label = { Text(stringResource(R.string.monthly_payment_str)) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
@@ -139,7 +141,7 @@ fun LoanSheet(
 
         // Дата старта (пока просто текст; можно прикрутить DatePicker)
         Text(
-            "Start date: ${sdf.format(Date(paymentDateMillis))}",
+            stringResource(R.string.start_date_str, sdf.format(Date(paymentDateMillis))),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(Modifier.height(8.dp))
@@ -153,9 +155,11 @@ fun LoanSheet(
             Button(
                 onClick = {
                     // Валидация
-                    if (bank == null) { error = "Bank is required."; return@Button }
-                    if (amount <= 0.0) { error = "Amount must be greater than zero."; return@Button }
-                    if (payment <= 0.0) { error = "Monthly payment must be greater than zero."; return@Button }
+                    if (bank == null) { error = context.getString(R.string.bank_is_required_str); return@Button }
+                    if (amount <= 0.0) { error =
+                        context.getString(R.string.amount_must_be_greater_than_zero_str); return@Button }
+                    if (payment <= 0.0) { error =
+                        context.getString(R.string.monthly_payment_must_be_greater_than_zero_str); return@Button }
 
                     val finalName = if (name.isBlank()) "Loan at ${bank!!.name}" else name
 
@@ -164,7 +168,7 @@ fun LoanSheet(
                         name = finalName,
                         bankId = bank!!.id,
                         amount = amount,
-                        currency = currency.code, // теперь точно String
+                        currency = currency.code,
                         isInstalments = false,
                         durationDays = null,
                         payment = payment,
@@ -178,7 +182,7 @@ fun LoanSheet(
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Brand)
             ) {
-                Text("Save")
+                Text(stringResource(R.string.save_str))
             }
 
             if (isEditing && initial != null) {
@@ -189,11 +193,11 @@ fun LoanSheet(
                             onClose()
                         }
                     }
-                ) { Text("Delete") }
+                ) { Text(stringResource(R.string.delete_str)) }
             }
 
             Spacer(Modifier.weight(1f))
-            TextButton(onClick = onClose) { Text("Close") }
+            TextButton(onClick = onClose) { Text(stringResource(R.string.close_str)) }
         }
     }
 }

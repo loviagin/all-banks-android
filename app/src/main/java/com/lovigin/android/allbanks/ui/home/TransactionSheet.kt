@@ -12,6 +12,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.lovigin.android.allbanks.R
 import com.lovigin.android.allbanks.data.local.AppDatabase
 import com.lovigin.android.allbanks.data.local.entity.*
 import com.lovigin.android.allbanks.viewmodel.MainViewModel
@@ -98,7 +100,7 @@ fun TransactionSheet(
             .padding(20.dp)
     ) {
         Text(
-            if (isEditing) "Transaction" else "New Transaction",
+            if (isEditing) stringResource(R.string.transaction_str) else stringResource(R.string.new_transaction_str),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -107,7 +109,7 @@ fun TransactionSheet(
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Enter name (optional)") },
+            label = { Text(stringResource(R.string.enter_name_optional_str)) },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(12.dp))
@@ -115,7 +117,7 @@ fun TransactionSheet(
         // Банк
         var bankMenu by remember { mutableStateOf(false) }
         OutlinedButton(onClick = { bankMenu = true }, modifier = Modifier.fillMaxWidth()) {
-            Text(bank?.name ?: "Choose bank")
+            Text(bank?.name ?: stringResource(R.string.choose_bank_str))
         }
         DropdownMenu(expanded = bankMenu, onDismissRequest = { bankMenu = false }) {
             banks.forEach { b ->
@@ -132,11 +134,11 @@ fun TransactionSheet(
             modifier = Modifier.fillMaxWidth(),
             enabled = bank != null
         ) {
-            Text(account?.name ?: "Choose account")
+            Text(account?.name ?: stringResource(R.string.choose_account_str))
         }
         DropdownMenu(expanded = accMenu, onDismissRequest = { accMenu = false }) {
             if (accounts.isEmpty()) {
-                DropdownMenuItem(text = { Text("No accounts available") }, onClick = { })
+                DropdownMenuItem(text = { Text(stringResource(R.string.no_accounts_available_str)) }, onClick = { })
             } else {
                 accounts.forEach { a ->
                     DropdownMenuItem(text = { Text(a.name) }, onClick = { account = a; accMenu = false })
@@ -158,24 +160,24 @@ fun TransactionSheet(
         Spacer(Modifier.height(12.dp))
 
         // Сумма
-        Text("Amount:")
+        Text(stringResource(R.string.amount_str))
         OutlinedTextField(
             value = amountInput,
             onValueChange = { v -> amountInput = v.filter { it.isDigit() || it == '.' || it == '-' } },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            placeholder = { Text("Transaction amount") },
+            placeholder = { Text(stringResource(R.string.transaction_amount_str)) },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
 
         // Курс, если валюта ввода != валюте счёта
         if (account != null && !currency.code.equals(account!!.currency, true)) {
-            Text("Conversion rate:")
+            Text(stringResource(R.string.conversion_rate_str))
             OutlinedTextField(
                 value = if (convRate == 0.0) "" else convRate.toString(),
                 onValueChange = { v -> convRate = v.toDoubleOrNull() ?: 0.0 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                placeholder = { Text("Conversion rate") },
+                placeholder = { Text(stringResource(R.string.conversion_rate_str)) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(Modifier.height(8.dp))
@@ -192,7 +194,7 @@ fun TransactionSheet(
         // Категория
         var catMenu by remember { mutableStateOf(false) }
         OutlinedButton(onClick = { catMenu = true }, modifier = Modifier.fillMaxWidth()) {
-            Text(category?.name ?: "Choose category (optional)")
+            Text(category?.name ?: stringResource(R.string.choose_category_optional_str))
         }
         DropdownMenu(expanded = catMenu, onDismissRequest = { catMenu = false }) {
             categories.forEach { c ->
@@ -205,7 +207,7 @@ fun TransactionSheet(
         OutlinedTextField(
             value = more,
             onValueChange = { more = it },
-            label = { Text("More (optional)") },
+            label = { Text(stringResource(R.string.more_optional_str)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -219,14 +221,19 @@ fun TransactionSheet(
             Button(
                 onClick = {
                     // === save() ===
-                    val b = bank ?: return@Button run { error = "Bank is required."; }
-                    val a = account ?: return@Button run { error = "Account is required."; }
-                    val rawAmount = amountInput.toDoubleOrNull() ?: return@Button run { error = "Amount cannot be zero."; }
-                    if (rawAmount == 0.0) { error = "Amount cannot be zero."; return@Button }
+                    val b = bank ?: return@Button run { error =
+                        context.getString(R.string.bank_is_required_str); }
+                    val a = account ?: return@Button run { error =
+                        context.getString(R.string.account_is_required_str); }
+                    val rawAmount = amountInput.toDoubleOrNull() ?: return@Button run { error =
+                        context.getString(
+                            R.string.amount_cannot_be_zero_str
+                        ); }
+                    if (rawAmount == 0.0) { error = context.getString(R.string.amount_cannot_be_zero_str); return@Button }
 
                     // Если пользователь выбрал валюту, отличную от валюты счёта — курс обязателен
                     if (!currency.code.equals(a.currency, true) && convRate == 0.0) {
-                        error = "Conversion rate is required."
+                        error = context.getString(R.string.conversion_rate_is_required_str)
                         return@Button
                     }
 
@@ -266,12 +273,12 @@ fun TransactionSheet(
                     }
                 },
                 modifier = Modifier.weight(1f)
-            ) { Text("Save") }
+            ) { Text(stringResource(R.string.save_str)) }
 
             if (initial != null) {
                 var confirm by remember { mutableStateOf(false) }
                 OutlinedButton(onClick = { confirm = true }, modifier = Modifier.weight(1f)) {
-                    Text("Delete")
+                    Text(stringResource(R.string.delete_str))
                 }
                 if (confirm) {
                     AlertDialog(
@@ -288,18 +295,20 @@ fun TransactionSheet(
                                     db.transactionDao().delete(initial)
                                     onClose()
                                 }
-                            }) { Text("Delete") }
+                            }) { Text(stringResource(R.string.delete_str)) }
                         },
-                        dismissButton = { TextButton(onClick = { confirm = false }) { Text("Cancel") } },
-                        title = { Text("Delete transaction?") },
-                        text = { Text("Are you sure you want to delete this transaction?") }
+                        dismissButton = { TextButton(onClick = { confirm = false }) { Text(
+                            stringResource(R.string.cancel_str)
+                        ) } },
+                        title = { Text(stringResource(R.string.delete_transaction_str)) },
+                        text = { Text(stringResource(R.string.are_you_sure_you_want_to_delete_this_transaction_str)) }
                     )
                 }
             }
         }
 
         Spacer(Modifier.height(8.dp))
-        TextButton(onClick = onClose, modifier = Modifier.align(Alignment.End)) { Text("Close") }
+        TextButton(onClick = onClose, modifier = Modifier.align(Alignment.End)) { Text(stringResource(R.string.close_str)) }
     }
 }
 
@@ -312,12 +321,12 @@ private fun SegmentedButtons(
         FilterChip(
             selected = selected == TxType.Income,
             onClick = { onSelected(TxType.Income) },
-            label = { Text("Income") }
+            label = { Text(stringResource(R.string.income_str)) }
         )
         FilterChip(
             selected = selected == TxType.Expense,
             onClick = { onSelected(TxType.Expense) },
-            label = { Text("Expense") }
+            label = { Text(stringResource(R.string.expense_str)) }
         )
     }
 }

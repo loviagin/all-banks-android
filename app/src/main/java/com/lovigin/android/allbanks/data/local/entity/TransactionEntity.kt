@@ -13,7 +13,6 @@ data class TransactionEntity(
     val bankId: UUID = UUID.randomUUID(),
     val currency: String = "USD",
     val conversationRate: Double? = null,
-    /** дата операции в epochMillis */
     val dateMillis: Long = System.currentTimeMillis(),
     val location: String? = null,
     val more: String? = null,

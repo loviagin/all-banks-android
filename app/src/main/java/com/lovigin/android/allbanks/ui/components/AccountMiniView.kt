@@ -13,8 +13,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.lovigin.android.allbanks.R
 import com.lovigin.android.allbanks.data.local.entity.AccountEntity
 import com.lovigin.android.allbanks.model.Currency as AppCurrency
 
@@ -25,7 +27,7 @@ fun AccountMiniView(
     onClick: (() -> Unit)? = null
 ) {
     val symbol = fromCodeSafe(account.currency).symbol
-    val title = account.name.ifBlank { account.number ?: "Account" }
+    val title = account.name.ifBlank { account.number ?: stringResource(R.string.account_str) }
     val icon = currencyIcon(account.currency)
 
     Surface(

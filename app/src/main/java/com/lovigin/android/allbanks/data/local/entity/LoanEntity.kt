@@ -14,6 +14,5 @@ data class LoanEntity(
     val isInstalments: Boolean = false,
     val durationDays: Int? = null,
     val payment: Double = 0.0,
-    /** список дат платежей в epochMillis */
     val payments: List<Long> = emptyList()
 )
