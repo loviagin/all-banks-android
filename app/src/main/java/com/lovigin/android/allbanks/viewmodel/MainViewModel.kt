@@ -49,6 +49,10 @@ class MainViewModel(
         getAllowanceFromApi()
     }
 
+    fun setCurrentUser(user: UserEntity?) {
+        _currentUser.value = user
+    }
+
     fun select(tab: SelectedTab) { _selectedTab.value = tab }
 
     fun update() {

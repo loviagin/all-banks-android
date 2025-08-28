@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -23,6 +25,7 @@ android {
     namespace = "com.lovigin.android.allbanks"
     compileSdk = 36
     sourceSets["androidTest"].assets.srcDir("$projectDir/schemas")
+    android.buildFeatures.buildConfig = true
 
     defaultConfig {
         applicationId = "com.lovigin.android.allbanks"
@@ -53,6 +56,23 @@ android {
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
         arg("room.generateKotlin", "true")
+    }
+
+    val props = Properties().apply {
+        val f = rootProject.file("local.properties")
+        if (f.exists()) {
+            load(FileInputStream(f))
+        }
+    }
+
+    fun prop(name: String, fallback: String = ""): String =
+        (props.getProperty(name) ?: System.getenv(name) ?: fallback)
+
+    defaultConfig {
+        // ...
+        // ВАЖНО: всегда оборачиваем в кавычки — это строковые литералы для BuildConfig
+        buildConfigField("String", "TELEGRAM_BOT_TOKEN", "\"${prop("TELEGRAM_BOT_TOKEN")}\"")
+        buildConfigField("String", "TELEGRAM_CHAT_ID", "\"${prop("TELEGRAM_CHAT_ID")}\"")
     }
 }
 

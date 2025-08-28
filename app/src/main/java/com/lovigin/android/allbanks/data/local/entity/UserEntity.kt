@@ -7,8 +7,8 @@ import java.util.UUID
 @Entity(tableName = "users")
 data class UserEntity(
     @PrimaryKey val id: UUID = UUID.randomUUID(),
-    val name: String = "",
-    val email: String = "",
-    val defaultCurrency: String = "USD",
-    val favoritesCurrencies: List<String> = emptyList()
+    var name: String = "",
+    var email: String = "",
+    var defaultCurrency: String = "USD",
+    var favoritesCurrencies: String = ""
 )

@@ -1,5 +1,7 @@
 package com.lovigin.android.allbanks.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Home
@@ -12,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import com.lovigin.android.allbanks.ui.nav.SelectedTab
 import com.lovigin.android.allbanks.ui.screens.AccountScreen
 import com.lovigin.android.allbanks.ui.screens.HomeScreen
@@ -46,10 +49,12 @@ fun ContentScreen(viewModel: MainViewModel) {
             }
         }
     ) { padding ->
-        when (selectedTab) {
-            SelectedTab.Home -> HomeScreen()
-            SelectedTab.Statistics -> LoansScreen()
-            SelectedTab.Account -> AccountScreen()
+        Box(Modifier.padding(padding)) {
+            when (selectedTab) {
+                SelectedTab.Home -> HomeScreen(viewModel = viewModel)
+                SelectedTab.Statistics -> LoansScreen(viewModel = viewModel)
+                SelectedTab.Account -> AccountScreen(viewModel = viewModel)
+            }
         }
     }
 }
