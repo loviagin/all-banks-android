@@ -80,8 +80,8 @@ private fun AccountNavHost(
                     onBanks = { nav.navigate(AccountRoute.Banks.route) },
                     onAccounts = { nav.navigate(AccountRoute.Accounts.route) },
                     onCategories = { nav.navigate(AccountRoute.Categories.route) },
-                    onSettings = { nav.navigate(AccountRoute.Settings.route) },
                     onCurrencies = { nav.navigate(AccountRoute.Currencies.route) },
+                    onSettings = { nav.navigate(AccountRoute.Settings.route) },
                     onSuggestCurrency = { nav.navigate(AccountRoute.SuggestCurrency.route) }
                 )
             }
@@ -174,18 +174,19 @@ private fun AccountMenu(
         item {
             SectionHeader("Settings")
         }
-        item {
-            NavRow(
-                icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
-                title = "Settings",
-                onClick = onSettings
-            )
-        }
+
         item {
             NavRow(
                 icon = { Icon(Icons.Filled.CurrencyExchange, contentDescription = null) },
                 title = "Currencies",
                 onClick = onCurrencies
+            )
+        }
+        item {
+            NavRow(
+                icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
+                title = "Settings",
+                onClick = onSettings
             )
         }
 

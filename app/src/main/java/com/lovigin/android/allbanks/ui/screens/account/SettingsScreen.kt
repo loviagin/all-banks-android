@@ -24,6 +24,7 @@ import com.lovigin.android.allbanks.data.local.AppDatabase
 import com.lovigin.android.allbanks.ui.theme.Brand
 import com.lovigin.android.allbanks.ui.theme.MainDark
 import com.lovigin.android.allbanks.ui.theme.MainLight
+import com.lovigin.android.allbanks.utils.GetHelper
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -152,7 +153,7 @@ fun SettingsScreen() {
                     .fillMaxWidth()
             ) {
                 Text(
-                    "Version: ${getAppVersion(context)}",
+                    "Version: ${GetHelper.getAppVersion(context)}",
                     modifier = Modifier.padding(14.dp)
                 )
             }
