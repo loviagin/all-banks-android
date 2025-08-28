@@ -25,6 +25,7 @@ import com.lovigin.android.allbanks.data.local.entity.BankEntity
 import com.lovigin.android.allbanks.data.local.entity.TransactionEntity
 import com.lovigin.android.allbanks.model.Currency
 import com.lovigin.android.allbanks.ui.components.BalanceCard
+import com.lovigin.android.allbanks.ui.home.TransactionSheet
 import com.lovigin.android.allbanks.ui.theme.Brand
 import com.lovigin.android.allbanks.ui.theme.MainDark
 import com.lovigin.android.allbanks.ui.theme.MainLight
@@ -47,12 +48,12 @@ fun HomeScreen(
     val exchangeRates by viewModel.exchangeRates.collectAsState()
     val currentUser by viewModel.currentUser.collectAsState()
 
-    // локальные состояния (порт @State)
+    // локальные состояния
     var currentCurrency by remember { mutableStateOf(Currency.USD) }
     var balance by remember { mutableStateOf(0.0) }
 
-    var showTransactions by remember { mutableStateOf(false) }
-    var selectedTransaction by remember { mutableStateOf<TransactionEntity?>(null) }
+    var showTx by remember { mutableStateOf(false) }
+    var selectedTx by remember { mutableStateOf<TransactionEntity?>(null) }
 
     val darkTheme = isSystemInDarkTheme()
     val mainColor = if (darkTheme) MainDark else MainLight
@@ -85,15 +86,13 @@ fun HomeScreen(
 //        },
         floatingActionButton = {
             FloatingActionButton(
-                containerColor = Brand,
-                contentColor = mainColor,
                 onClick = {
-                    selectedTransaction = null
-                    showTransactions = true
-                }
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
-            }
+                    selectedTx = null
+                    showTx = true
+                },
+                containerColor = Brand,
+                contentColor = mainColor
+            ) { Icon(Icons.Default.Add, contentDescription = "Add") }
         }
     )  { padding ->
         Column(
@@ -250,8 +249,8 @@ fun HomeScreen(
                             transaction = t,
                             bankName = getBankName(t.bankId, banks),
                             onClick = {
-                                selectedTransaction = t
-                                showTransactions = true
+                                selectedTx = t
+                                showTx = true
                             }
                         )
                     }
@@ -259,21 +258,16 @@ fun HomeScreen(
             }
         }
 
-        // Bottom sheet (замена .sheet)
-        if (showTransactions) {
+        // Bottom sheet
+        if (showTx) {
             ModalBottomSheet(
-                onDismissRequest = {
-                    showTransactions = false
-                    selectedTransaction = null
-                },
-                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = selectedTransaction == null)
+                onDismissRequest = { showTx = false; selectedTx = null }
             ) {
-                TransactionSheetContent(
-                    transaction = selectedTransaction,
-                    onClose = {
-                        showTransactions = false
-                        selectedTransaction = null
-                    }
+                TransactionSheet(
+                    viewModel = viewModel,
+                    initial = selectedTx,
+                    onClose = { showTx = false; selectedTx = null },
+                    onSaved = { showTx = false; selectedTx = null }
                 )
             }
         }
