@@ -37,4 +37,4 @@ What’s coming next:
 Whether you manage personal finances or keep track of shared accounts, All Banks simplifies your financial life.
 
 
-Now available in (App Store)[https://apps.apple.com/us/app/all-banks-manage-accouns/id6744983251]
+Now available in [App Store](https://apps.apple.com/us/app/all-banks-manage-accouns/id6744983251) and by installing .app file for [Android](https://github.com/loviagin/all-banks-android/releases/tag/main)
