@@ -131,7 +131,7 @@ class MainViewModel(
     // --- Сумма по счетам в целевой валюте ---
     fun totalBalance(currentCurrency: Currency, accounts: List<AccountEntity>): Double {
         val targetKey = currentCurrency.code.uppercase(Locale.US)
-        println("🎯 Рассчитываем баланс в $targetKey")
+        println("🎯 Рассчитываем баланс в $targetKey для ${accounts.size} счетов")
 
         val rates = _exchangeRates.value
         if (rates.isEmpty()) {
@@ -139,17 +139,13 @@ class MainViewModel(
             return 0.0
         }
 
-        println("📊 Доступные курсы:")
-        rates.forEach { (k, v) -> println("   ${k.uppercase(Locale.US)}: $v") }
-
         val targetRate = rates[targetKey]
         if (targetRate == null) {
             println("❌ Нет курса для целевой валюты $targetKey")
             return 0.0
         }
-        println("📊 Текущий курс $targetKey: $targetRate")
 
-        return accounts
+        val total = accounts
             .asSequence()
             .filter { !it.isArchived }
             .mapNotNull { acc ->
@@ -171,12 +167,13 @@ class MainViewModel(
                         }
                     }
                     println("💱 Конвертация: ${acc.balance} $key -> $converted $targetKey")
-                    println("   Курс $key: $rate")
-                    println("   Курс $targetKey: $targetRate")
                     converted
                 }
             }
             .sum()
+            
+        println("💰 ИТОГО: $total $targetKey")
+        return total
     }
 
     // --- Курсы валют ---

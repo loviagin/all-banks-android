@@ -73,7 +73,9 @@ fun HomeScreen(
 
     // аналог .onReceive(viewModel.$exchangeRates)
     LaunchedEffect(exchangeRates, accounts) {
-        balance = viewModel.totalBalance(currentCurrency, accounts)
+        val newBalance = viewModel.totalBalance(currentCurrency, accounts)
+        println("🏠 Обновление баланса в HomeScreen: $newBalance $currentCurrency")
+        balance = newBalance
     }
 
     Scaffold(

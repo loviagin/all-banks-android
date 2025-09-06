@@ -241,11 +241,19 @@ fun TransactionSheet(
                     if (!currency.code.equals(a.currency, true)) {
                         final *= convRate
                     }
-                    if (txType == TxType.Expense && final > 0) final *= -1
+                    // Правильная логика: доходы положительные, расходы отрицательные
+                    if (txType == TxType.Expense) {
+                        final = -Math.abs(final) // расходы всегда отрицательные
+                    } else {
+                        final = Math.abs(final)  // доходы всегда положительные
+                    }
 
                     scope.launch {
                         if (initial == null) {
-                            // создаём транзакцию и обновляем баланс счёта
+                            println("💰 Создание транзакции: сумма=$final, тип=$txType, счет=${a.name}")
+                            println("💰 Баланс до обновления: ${a.balance}")
+                            
+                            // Создаём транзакцию и обновляем баланс атомарно
                             val entity = TransactionEntity(
                                 id = UUID.randomUUID(),
                                 name = name.ifBlank { null },
@@ -259,8 +267,10 @@ fun TransactionSheet(
                                 category = category?.id
                             )
                             db.transactionDao().upsert(entity)
-                            // обновим баланс
-                            db.accountDao().upsert(a.copy(balance = a.balance + final))
+                            // обновляем баланс счёта
+                            val newBalance = a.balance + final
+                            println("💰 Новый баланс: $newBalance")
+                            db.accountDao().upsert(a.copy(balance = newBalance))
                         } else {
                             // как в Swift — редактируем только name (и при желании more)
                             val updated = initial.copy(
